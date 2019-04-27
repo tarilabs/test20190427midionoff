@@ -1,0 +1,20 @@
+modprobe snd-virmidi snd_index=1
+
+ 1003  jabba use graalvm@1.0.0-16
+ 1004  export GRAALVM_HOME=$JAVA_HOME
+ 1005  mvn clean package
+
+$ sudo dnf install glibc-static zlib-static
+
+$ java -agentlib:native-image-agent=config-output-dir=conf/ -jar target/test20190427midionoff-0.0.1-SNAPSHOT.jar
+$ native-image --static -H:ConfigurationFileDirectories=conf/ -jar target/test20190427midionoff-0.0.1-SNAPSHOT.jar
+$ ./test20190427midionoff-0.0.1-SNAPSHOT 
+Exception in thread "main" java.lang.UnsatisfiedLinkError: com.sun.media.sound.MidiOutDeviceProvider.nGetNumDevices()I [symbol: Java_com_sun_media_sound_MidiOutDeviceProvider_nGetNumDevices or Java_com_sun_media_sound_MidiOutDeviceProvider_nGetNumDevices__]
+	at com.oracle.svm.jni.access.JNINativeLinkage.getOrFindEntryPoint(JNINativeLinkage.java:145)
+	at com.oracle.svm.jni.JNIGeneratedMethodSupport.nativeCallAddress(JNIGeneratedMethodSupport.java:57)
+	at com.sun.media.sound.MidiOutDeviceProvider.nGetNumDevices(MidiOutDeviceProvider.java)
+	at com.sun.media.sound.MidiOutDeviceProvider.getNumDevices(MidiOutDeviceProvider.java:85)
+	at com.sun.media.sound.AbstractMidiDeviceProvider.readDeviceInfos(AbstractMidiDeviceProvider.java:69)
+	at com.sun.media.sound.AbstractMidiDeviceProvider.getDeviceInfo(AbstractMidiDeviceProvider.java:122)
+	at javax.sound.midi.MidiSystem.getMidiDeviceInfo(MidiSystem.java:195)
+	at net.tarilabs.test20190427midionoff.App.main(App.java:16)
