@@ -1,5 +1,7 @@
 package net.tarilabs.test20190427midionoff;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Scanner;
 
 import javax.sound.midi.MidiDevice;
@@ -13,6 +15,7 @@ import javax.sound.midi.Transmitter;
 public class App {
 
     public static void main(String[] args) throws Exception {
+        graalvmniworkaround();
         Info[] devs = MidiSystem.getMidiDeviceInfo();
         for (int i = 0; i < devs.length; i++) {
             MidiDevice d = MidiSystem.getMidiDevice(devs[i]);
@@ -28,6 +31,21 @@ public class App {
         transmitter.setReceiver(new ConsoleReceiver());
         scanner.nextLine();
         device.close();
+    }
+
+    /**
+     * https://github.com/oracle/graal/issues/1205
+     */
+    private static void graalvmniworkaround() throws Exception {
+        Field loadedLibs = Class.forName("com.sun.media.sound.Platform").getDeclaredField("loadedLibs");
+        loadedLibs.setAccessible(true);
+        loadedLibs.setInt(null, 0);
+        Method loadLibraries = Class.forName("com.sun.media.sound.Platform").getDeclaredMethod("loadLibraries");
+        loadLibraries.setAccessible(true);
+        loadLibraries.invoke(null);
+        Method readProperties = Class.forName("com.sun.media.sound.Platform").getDeclaredMethod("readProperties");
+        readProperties.setAccessible(true);
+        readProperties.invoke(null);
     }
 
     private static void printInfo(int idx, MidiDevice d) {
