@@ -1,13 +1,17 @@
 modprobe snd-virmidi snd_index=1
 
- 1003  jabba use graalvm@1.0.0-16
- 1004  export GRAALVM_HOME=$JAVA_HOME
- 1005  mvn clean package
+jabba use graalvm@1.0.0-16
+export GRAALVM_HOME=$JAVA_HOME
+mvn clean package
 
 $ sudo dnf install glibc-static zlib-static
 
 $ java -agentlib:native-image-agent=config-output-dir=conf/ -jar target/test20190427midionoff-0.0.1-SNAPSHOT.jar
 $ native-image --static -H:ConfigurationFileDirectories=conf/ -jar target/test20190427midionoff-0.0.1-SNAPSHOT.jar
+
+ 1016  native-image --static -H:JNIConfigurationFiles=conf/jni-config.json -H:ReflectionConfigurationFiles=conf/reflect-config.json -jar target/test20190427midionoff-0.0.1-SNAPSHOT.jar
+
+
 $ ./test20190427midionoff-0.0.1-SNAPSHOT 
 Exception in thread "main" java.lang.UnsatisfiedLinkError: com.sun.media.sound.MidiOutDeviceProvider.nGetNumDevices()I [symbol: Java_com_sun_media_sound_MidiOutDeviceProvider_nGetNumDevices or Java_com_sun_media_sound_MidiOutDeviceProvider_nGetNumDevices__]
 	at com.oracle.svm.jni.access.JNINativeLinkage.getOrFindEntryPoint(JNINativeLinkage.java:145)
